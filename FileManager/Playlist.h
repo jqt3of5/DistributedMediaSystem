@@ -1,11 +1,12 @@
+#include <vector>
 #include "Track.h"
+
+using namespace std;
 
 struct Playlist
 {
-
-  Track * tracks;
+  vector<Track*> tracks;
   int numTracks;
   char * filePath;
-
-
+  char * name;`
 };

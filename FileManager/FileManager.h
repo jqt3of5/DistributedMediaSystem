@@ -1,17 +1,19 @@
 #include "Track.h"
 #include "Playlist.h"
 
-#define ALL_TRACK_PLAYLIST "all_track_playlist.m3u"
+#define ALL_TRACK_PLAYLIST "all_track_playlist"
 class FileManager
 {
 
  public:
   FileManager(char *musicDir, char * playlistDir);
-  void RefreshMusicDB();
-  PlayList * LoadPlayListFromFile(char * filePath);
-  char * CreatePlayList(char * name, Track* tracks, int numTracks);
-  bool SavePlayListToFile(char * filePath);
 
+
+  void RefreshMusicDB();
+  PlayList * LoadPlayList(char * name);
+  bool AddToPlayList(char * name, Track *tracks, int numTracks);
+  bool RMPlaylist(char * name);
+  
  private:
   PlayList * _activePlayLists;
   char * musicRootDirectory;
