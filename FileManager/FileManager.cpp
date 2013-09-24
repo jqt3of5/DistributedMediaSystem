@@ -26,6 +26,11 @@ PlayList *  FileManager::LoadPlayList(char * name)
   strcat(filePath, name);
 
   FILE * playList = fopen(filePath, "r");
+  if (playList == null)
+    {
+      return null;
+    }
+
   PlayList * newPlayList = new PlayList();
   char * line = 0;
 
@@ -38,6 +43,8 @@ PlayList *  FileManager::LoadPlayList(char * name)
         getline(&line, 0, playList);
     }
   static const boost::regex m3uExtExp("#EXTINF:([0-9]*),(.*) - (.*)");
+  static const boost::regex fsExp("([^/]+)\.([^/]+)$");
+  
   do {
     var track = new Track();
       if (isExtendedM3U)
@@ -57,9 +64,14 @@ PlayList *  FileManager::LoadPlayList(char * name)
 	}
       //'parse' the file path
       getline(&line, strlen(line), playList);
-      track.name = calloc(sizeof(char), strlen(line));
-      strcpy(track.name, line);
-
+      track.filePath = calloc(sizeof(char), strlen(line));
+      strcpy(track.filePath, line);
+      if (!isExtendedM3U && regex_match(line, fsExp))
+	{
+	  track.name = new char[match_result[1].str().length()];
+	  strcpy(track.name, match_result[1].str().c_str());
+	  strcpy(track.ext, match_result[2].str().c_str());
+	}
       //add the track to the play list
       newPlayList.tracks.push_back(track);
   } while (getline(&line, strlen(line), playList) != -1)
@@ -68,16 +80,47 @@ PlayList *  FileManager::LoadPlayList(char * name)
     return newPlayList;
 }
 
-bool AddToPlayList(char * name, Track *tracks, int numTracks)
+bool FileManager::AddToPlayList(char * name, Track *tracks[], int numTracks)
 {
   int pathLen = strlen(playListRootDirectory) + strlen(name);
   char * filePath = calloc(sizeof(char), pathLen);
   strcpy(filePath, playListRootDirectory);
   strcat(filePath, name);
 
-  FILE * playList = fopen(filePath, "a");
-
+  FILE * playList = fopen(filePath, "a+");
+  if (playList == null)
+    {
+      return false;
+    }
+  fseek(playList, 0, SEEK_SET);
+  getline(&line, 0, playList);
   
+  bool isExtendedM3U = !strcmp(line, "#EXTM3U");
+  
+  for (int i = 0; i < numTracks; ++i)
+    {
+      if (isExtendedM3U)
+	{
+	  fprintf(playList, "#EXTINF:%d,%s - %s\n", tracks[i]->duration, tracks[i]->name, tracks[i]->artist);
+	}
+      fprintf(playList, "%s\n\n", tracks[i]->filePath);
+    }
+
+  //if the playlist we are updating is the active playlist... update it.
+  if (!strcmp(_activePlayList.name, name))
+    {
+      //update
+      for (int i = 0; i < numTracks; ++i)
+	{
+	  _activePlayList.tracks.push_back(tracks[i]);
+	}
+      //invalidation
+      //      delete _activePlayList;
+      //      _activePlayList = LoadPlayList(name);
+    }
+
+  fclose(playlist);
+  return true;
 }
 
 

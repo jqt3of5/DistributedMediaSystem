@@ -6,16 +6,17 @@ class FileManager
 {
 
  public:
+  //Intialize functions
   FileManager(char *musicDir, char * playlistDir);
-
-
   void RefreshMusicDB();
+
+  //Playlist functions
   PlayList * LoadPlayList(char * name);
-  bool AddToPlayList(char * name, Track *tracks, int numTracks);
+  bool AddToPlayList(char * name, Track tracks[], int numTracks);
   bool RMPlaylist(char * name);
   
  private:
-  PlayList * _activePlayLists;
+  static PlayList * _activePlayList;
   char * musicRootDirectory;
   char * playListRootDirectory;
 
