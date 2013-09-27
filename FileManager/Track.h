@@ -10,4 +10,6 @@ struct Track
   //  char * album;
   //  char * data;
   //  char * description;
+  
+  static bool LoadTrack(char * fname);
 };
