@@ -11,6 +11,7 @@ class FileManager
   void RefreshMusicDB();
 
   //Playlist functions
+  char ** ListPlayLists();
   PlayList * LoadPlayList(char * name);
   bool AddToPlayList(char * name, Track tracks[], int numTracks);
   bool RMPlaylist(char * name);
