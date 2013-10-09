@@ -12,7 +12,6 @@ class Playlist
   char * name;
   
   static PlayList * LoadPlayListFromFile(char *fname);
-  static bool SavePlayListToFile(PlayList *playList, char *fname);
   bool SavePlayListToFile(char *fname);
   bool AddTrack(Track *track);
   bool RemoveTrack(Track *track);
